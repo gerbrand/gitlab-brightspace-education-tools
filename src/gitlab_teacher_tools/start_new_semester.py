@@ -20,33 +20,9 @@ def main() -> None:
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
-    # config['wef'] = {
-    #     'students_group_id': '67587',
-    #     'dlo_class_export_csv': 'resources/Web Frameworks DT 20252026_AllGroups_20250905091127.csv',
-    #     'base_project_url': 'git@gitlab.fdmci.hva.nl:WEF/teamxx.git',
-    #     'local_teams_dir': '/home/gerbrand/workspace/HvA/WEF/teams'
-    # }
-    #
-    # config['ads'] = {
-    #     'students_group_id': '66447',
-    #     'dlo_class_export_csv': 'resources/ADS DT 20252026_AllGroups_20250905091127.csv',
-    #     'base_project_url': 'git@gitlab.fdmci.hva.nl:ads/teamxx.git',
-    #     'local_teams_dir': '/home/gerbrand/workspace/HvA/ADS/teams'
-    # }
-    # with open('semester_in_gitlab.ini', 'w') as configfile:
-    #     config.write(configfile)
     config.read('semester_in_gitlab.ini')
 
     subject_config = config[args.subject]
-    # Settings for WEF
-    # students_group_id = '67587'
-    # # Csv file with team names and email addresses, as exported from DLO (Brightspace)
-    # dlo_class_export_csv = 'resources/Web Frameworks DT 20252026_AllGroups_20250905091127.csv'
-    # # Base project on which student repos will be based on
-    # base_project_url = "git@gitlab.fdmci.hva.nl:WEF/teamxx.git"
-    # # Directory where student repos will be cloned to
-    # local_teams_dir = "/home/gerbrand/workspace/HvA/WEF/teams"
-    # Settings for ADS
     students_group_id = subject_config['students_group_id']
     # Csv file with team names and email addresses, as exported from DLO (Brightspace)
     # Can be exported via Cursusbeheerder, Cursistenbeheer, Groepen
