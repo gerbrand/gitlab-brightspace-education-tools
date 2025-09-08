@@ -94,23 +94,25 @@ def main() -> None:
                         f.write(output)
 
 
-                subprocess.call(['git', 'add', 'README.md'], cwd=local_dir)
-                subprocess.call(['git', 'rm', '-f', 'README.md.jinja'], cwd=local_dir)
-                subprocess.call(['git', 'commit', '-m', 'Update README.md'], cwd=local_dir)
+                    subprocess.call(['git', 'add', 'README.md'], cwd=local_dir)
+                    subprocess.call(['git', 'rm', '-f', 'README.md.jinja'], cwd=local_dir)
+                    subprocess.call(['git', 'commit', '-m', 'Update README.md'], cwd=local_dir)
 
                 subprocess.call(['git', 'push'], cwd = local_dir)
             else:
                 # throw exception
                 print(f"Merge failed for {team}")
         emails = emails_by_group.get(team)
-        for email in emails:
-            project.invitations.create(
-                {
-                    "email": email,
-                    "access_level": gitlab.const.AccessLevel.MAINTAINER,
-                }
-            )
-            print(f"invitation created for {email}")
+        projectMembers = project.members
+        if not project.invitations and not  (projectMembers and  any([m.access_level <= 40 for m in project.members.list()])):
+            for email in emails:
+                project.invitations.create(
+                    {
+                        "email": email,
+                        "access_level": gitlab.const.AccessLevel.MAINTAINER,
+                    }
+                )
+                print(f"invitation created for {email}")
 
 
 
