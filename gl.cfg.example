@@ -1,0 +1,13 @@
+[global]
+default = somewhere
+ssl_verify = true
+timeout = 5
+
+[hva]
+# URL of your gitlab server, if different
+url = https://gitlab.fdmci.hva.nl
+# Get token via https://www.gitlab.com/-/user_settings/personal_access_tokens?page=1&state=active&sort=expires_asc
+# replace www.gitlab.com with your own server if needed
+# Never check this in!
+private_token = <replace with a private token>
+api_version = 4

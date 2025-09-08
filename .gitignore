@@ -1,0 +1,7 @@
+dist
+.venv
+gl.cfg
+semester_in_gitlab.ini
+**/__pycache__/**
+data/**
+
