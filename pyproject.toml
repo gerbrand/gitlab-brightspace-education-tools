@@ -8,7 +8,9 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "gitpython>=3.1.45",
     "jinja2>=3.1.6",
+    "mypy>=1.17.1",
     "pandas>=2.3.2",
     "pandas-stubs==2.3.2.250827",
     "python-gitlab>=6.3.0",
