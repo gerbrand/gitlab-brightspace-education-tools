@@ -43,6 +43,7 @@ def main() -> None:
 
     #query email addresses grouped by group name from df
     emails_by_group = df.groupby('Group Name')['Email Address'].apply(list).to_dict()
+    students_by_group = dict([(g,s.apply(list)) for g,s in df.groupby('Group Name')])
 
     existing_projects = dict([(p.name, p) for p in group.projects.list(get_all=True)])
 
@@ -79,9 +80,16 @@ def main() -> None:
                 # throw exception
                 print(f"Merge failed for {team}")
         emails = emails_by_group.get(team)
-        projectMembers = project.members
-        if not project.invitations and not  (projectMembers and  any([m.access_level <= 40 for m in project.members.list()])):
-            for email in emails:
+        existingUsernames = [member.username for member in project.members.list()]
+#        brightspaceUsernames = [n.split('@')[0] for n in username_by_group.get(team)]
+        projectInvitations = project.invitations.list()
+        students = students_by_group[team]
+        brightspaceUsernames = [n.split('@')[0] for n in students['Username']]
+
+        for idx, brightspaceUsername in enumerate(brightspaceUsernames):
+            if not brightspaceUsername in existingUsernames:
+                # TODO solve this more elegantly
+                email = [e for e in students['Email Address']][idx]
                 project.invitations.create(
                     {
                         "email": email,
@@ -89,6 +97,9 @@ def main() -> None:
                     }
                 )
                 print(f"invitation created for {email}")
+
+        # if not project.invitations and not  (projectMembers and any([m.access_level <= 40 for m in project.members])):
+        #     for email in emails:
 
 
 
