@@ -81,7 +81,6 @@ def main() -> None:
                 print(f"Merge failed for {team}")
         emails = emails_by_group.get(team)
         existingUsernames = [member.username for member in project.members.list()]
-#        brightspaceUsernames = [n.split('@')[0] for n in username_by_group.get(team)]
         projectInvitations = project.invitations.list()
         students = students_by_group[team]
         brightspaceUsernames = [n.split('@')[0] for n in students['Username']]
@@ -97,11 +96,6 @@ def main() -> None:
                     }
                 )
                 print(f"invitation created for {email}")
-
-        # if not project.invitations and not  (projectMembers and any([m.access_level <= 40 for m in project.members])):
-        #     for email in emails:
-
-
 
 
 if __name__ == "__main__":
