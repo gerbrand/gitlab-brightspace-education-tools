@@ -57,7 +57,8 @@ def main() -> None:
         result_clone=subprocess.call(['git', 'clone', git_url], cwd = local_teams_dir)
         local_dir = f"{local_teams_dir}/{team.replace(" ", "-")}"
         result_remote = subprocess.call(['git', 'remote', 'add', 'base_project', base_project_url], cwd = local_dir)
-        if result_remote == 0 or True:
+        if result_remote == 0 or result_remote == 3:
+            result_pull = subprocess.call(['git', 'pull'], cwd=local_dir)
             subprocess.call(['git', 'fetch', 'base_project'], cwd = local_dir)
             result_merge = subprocess.call(['git', 'merge', 'base_project/master'], cwd = local_dir)
             if result_merge == 0:

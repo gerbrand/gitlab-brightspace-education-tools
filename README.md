@@ -1,4 +1,4 @@
-# Starting a new semester with Gitlab
+# Synching Brightspace with Gitlab
 At the [university](https://www.hva.nl) I'm teaching, we have a Brightspace environment education needs and a Gitlab environment where students can publish their code.
 
 This repository (will) contain scripts and tools to sync both environments.

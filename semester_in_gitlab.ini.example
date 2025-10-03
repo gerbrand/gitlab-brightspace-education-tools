@@ -1,13 +1,15 @@
 [programming]
 # Name of the course
-name = "Introduction to programming"
+name = "Programming"
 # CSV Export file from Bightspace, with all students of your class, along with each of the group they have joined.
-dlo_class_export_csv = resources/Web Frameworks DT 20252026_AllGroups_20250905091127.csv
+dlo_class_export_csv = resources/Programming 12345_AllGroups_20250905091127.csv
 # Group Id in Gitlab, where you want to create repositories for each team
 students_group_id = <gilab group id>
 # A base url for your gitlab instance.
-base_project_url = git@gitlab.fdmci.hva.nl:WEF/teamxx.git
+base_project_url = git@gitlab.fdmci.hva.nl:programming/teamxx.git
 # Local directory where you want to store the checked out repositories
-local_teams_dir = /home/gerbrand/workspace/HvA/WEF/teams
+local_teams_dir = /home/gerbrand/workspace/HvA/programming/teams
+# Id of all projects with sample code that you want to share with all teams
+sample_project_ids = 12345
 
 
