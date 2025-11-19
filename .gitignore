@@ -1,7 +1,7 @@
 dist
 .venv
 gl.cfg
-semester_in_gitlab.ini
+gitlab-brightspace.ini
 **/__pycache__/**
 data/**
 

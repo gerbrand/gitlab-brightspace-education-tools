@@ -1,41 +1,17 @@
-import itertools
 import os
+import subprocess
 
 import gitlab
 import pandas
-import subprocess
-
-from gitlab import GitlabCreateError
 from jinja2 import Template
-import argparse
-import configparser
+
+import myenv
 
 
-def main() -> None:
-    # Group where teams repos for students will be created
-
-    parser = argparse.ArgumentParser(prog='gitlab-brightspace', usage='Sync gitlab projects with teams in Brightspace')
-    parser.add_argument("--subject", help="Subject for which to create or update projects. Should be one in config file",
-                        type=str)
-    args = parser.parse_args()
-
-    config = configparser.ConfigParser()
-    config.read('semester_in_gitlab.ini')
-
-    subject_config = config[args.subject]
-    students_group_id = subject_config['students_group_id']
-    # Csv file with team names and email addresses, as exported from DLO (Brightspace)
-    # Can be exported via Cursusbeheerder, Cursistenbeheer, Groepen
-    dlo_class_export_csv = subject_config['dlo_class_export_csv']
-    # Base project on which student repos will be based on
-    base_project_url = subject_config['base_project_url']
-    # Directory where student repos will be cloned to
-    local_teams_dir = subject_config['local_teams_dir']
-
-    gl = gitlab.Gitlab.from_config('hva', ['./gl.cfg'])
+def sync_with_brightspace(students_group_id: str, dlo_class_export_csv: str, base_project_url: str, local_teams_dir: str):
+    gl = myenv.gl
 
     group = gl.groups.get(students_group_id)
-    print(group)
 
     df = pandas.read_csv(dlo_class_export_csv)
     #query unique teams from df
@@ -97,7 +73,3 @@ def main() -> None:
                     }
                 )
                 print(f"invitation created for {email}")
-
-
-if __name__ == "__main__":
-    main()
