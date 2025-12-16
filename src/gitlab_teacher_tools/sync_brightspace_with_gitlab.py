@@ -1,4 +1,5 @@
 import os
+import shlex
 import subprocess
 
 import gitlab
@@ -11,8 +12,6 @@ from gitlab_teacher_tools.gitlab_service import GitlabService
 
 
 def sync_with_brightspace(brightspaceService:BrightspaceService, gitlabService:GitlabService):
-
-
 
     teams = brightspaceService.teams
 
@@ -41,3 +40,19 @@ def sync_with_brightspace(brightspaceService:BrightspaceService, gitlabService:G
                     }
                 )
                 print(f"invitation created for {email}")
+
+def add_teacher_tests(brightspaceService:BrightspaceService, gitlabService:GitlabService, solution_project_dir: str):
+
+    teams = brightspaceService.teams
+
+    for team in teams:
+        project, local_team_project_dir = gitlabService.getOrCreateTeamProject(team)
+
+        assignments: list[str] = filter(lambda d : d.startswith("Assignment"), os.listdir(solution_project_dir))
+        for assignment in assignments:
+            solution_assignment_dir = os.path.join(solution_project_dir, assignment,"src","test")
+            team_assignment_dir = os.path.join(local_team_project_dir, assignment)
+            if os.path.isdir(solution_assignment_dir):
+                result = subprocess.call(shlex.split(f"cp -rvp {solution_assignment_dir} {team_assignment_dir}/src/"))
+                if result != 0:
+                    raise RuntimeError(f"Error while copying tests for assignment {assignment} to {local_team_project_dir}")

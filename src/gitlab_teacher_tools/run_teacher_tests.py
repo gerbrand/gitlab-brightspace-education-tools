@@ -13,7 +13,7 @@ def main() -> None:
                         help="Subject for which to create or update projects. Should be one in config file",
                         type=str)
     parser.add_argument( "action",
-                         choices=["sync"],
+                         choices=["sync","add_teacher_tests"],
                         help="What to do, by default sync with Brightspace with gitlab using supplied csv export",
                         type=str)
     args = parser.parse_args()
@@ -36,12 +36,16 @@ def main() -> None:
         # Directory where student repos will be cloned to
         local_teams_dir = subject_config['local_teams_dir']
 
+        solution_project_dir = subject_config.get('solution_project_dir')
+
         gl = myenv.gl
         brightspaceService = BrightspaceService(dlo_class_export_csv)
         gitlabService = GitlabService(gl, students_group_id, local_teams_dir, base_project_url = base_project_url)
 
         if args.action == "sync":
             sync_brightspace_with_gitlab.sync_with_brightspace(brightspaceService, gitlabService)
+        elif args.action == "add_teacher_tests" and solution_project_dir:
+            sync_brightspace_with_gitlab.add_teacher_tests(brightspaceService, gitlabService, solution_project_dir)
     else:
         # TODO should solve this in a more proper way. Can I define a config parser?
         sys.stderr.writelines("Missing students_group_id")
