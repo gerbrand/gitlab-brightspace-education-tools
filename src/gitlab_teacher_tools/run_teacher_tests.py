@@ -25,9 +25,10 @@ def main() -> None:
     base_project_url = subject_config['base_project_url']
     # Directory where student repos will be cloned to
     local_teams_dir = subject_config['local_teams_dir']
+    solution_project_url = subject_config.get('solution_project_url')
 
     if args.action == "sync":
-        sync_brightspace_with_gitlab.sync_with_brightspace(students_group_id = students_group_id, dlo_class_export_csv = dlo_class_export_csv,base_project_url = base_project_url, local_teams_dir = local_teams_dir)
+        sync_brightspace_with_gitlab.sync_with_brightspace(students_group_id = students_group_id, dlo_class_export_csv = dlo_class_export_csv,base_project_url = base_project_url, local_teams_dir = local_teams_dir, solution_project_url = solution_project_url)
 
 
 

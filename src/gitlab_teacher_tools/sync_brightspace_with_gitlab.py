@@ -6,29 +6,30 @@ import pandas
 from jinja2 import Template
 
 import myenv
+from gitlab_teacher_tools.brightspace_service import BrightspaceService
+from gitlab_teacher_tools.gitlab_service import GitlabService
 
 
-def sync_with_brightspace(students_group_id: str, dlo_class_export_csv: str, base_project_url: str, local_teams_dir: str):
+def sync_with_brightspace(students_group_id: str, dlo_class_export_csv: str, base_project_url: str, local_teams_dir: str, solution_project_url: str | None = None):
     gl = myenv.gl
 
-    group = gl.groups.get(students_group_id)
+    brightspaceService = BrightspaceService(dlo_class_export_csv)
+    gitlabService = GitlabService(gl, students_group_id)
 
-    df = pandas.read_csv(dlo_class_export_csv)
-    #query unique teams from df
-    teams = df['Group Name'].unique()
+    teams = brightspaceService.teams
 
-    #query email addresses grouped by group name from df
-    emails_by_group = df.groupby('Group Name')['Email Address'].apply(list).to_dict()
-    students_by_group = dict([(g,s.apply(list)) for g,s in df.groupby('Group Name')])
+    emails_by_group = brightspaceService.emails_by_group
+    students_by_group = brightspaceService.students_by_group
 
-    existing_projects = dict([(p.name, p) for p in group.projects.list(get_all=True)])
+    # result_clone = subprocess.call(['git', 'clone', solution_project_url], cwd=local_teams_dir)
+    # assert(result_clone == 0 or result_clone == 3)
+    # solutions_dir = f"{local_teams_dir}/teamsolutions"
+    # result_pull = subprocess.call(['git', 'pull'], cwd=solutions_dir)
+    # assert (result_pull == 0)
 
     for team in teams:
-        group_project = existing_projects.get(team)
-        if group_project:
-            project = gl.projects.get(group_project.id)
-        else:
-            project = gl.projects.create({'name': team, 'namespace_id': students_group_id})
+        project = gitlabService.getOrCreateTeamProject(team)
+
         git_url = project.ssh_url_to_repo
         result_clone=subprocess.call(['git', 'clone', git_url], cwd = local_teams_dir)
         local_dir = f"{local_teams_dir}/{team.replace(" ", "-")}"
@@ -56,6 +57,8 @@ def sync_with_brightspace(students_group_id: str, dlo_class_export_csv: str, bas
             else:
                 # throw exception
                 print(f"Merge failed for {team}")
+            # result = subprocess.call(f"cp -rvp {solutions_dir}/src/test/* {local_dir}/", cwd=solutions_dir)
+            # assert(result == 0)
         emails = emails_by_group.get(team)
         existingUsernames = [member.username for member in project.members.list()]
         projectInvitations = project.invitations.list()
