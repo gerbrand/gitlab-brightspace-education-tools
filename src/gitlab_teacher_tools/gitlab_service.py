@@ -1,8 +1,10 @@
+import os
 import subprocess
 from typing import Tuple
 
 from gitlab import Gitlab
 from gitlab.v4.objects import Group, Project
+from jinja2 import Template
 
 
 def get_group(gl: Gitlab, students_group_id: int) -> Group:
@@ -35,6 +37,38 @@ class GitlabService:
             return (project, local_team_project_dir)
         else:
             raise RuntimeError(f"Error while updating {local_team_project_dir}")
+
+    def mergeWithBaseProject(self, team: str):
+
+        local_team_project_dir = self.localTeamProjectDir(team)
+
+        result_remote = subprocess.call(['git', 'remote', 'add', 'base_project', self.base_project_url], cwd = local_team_project_dir)
+
+        if not (result_remote == 0 or result_remote == 3):
+            raise RuntimeError(f"Error while updating {local_team_project_dir}")
+
+        result_pull = subprocess.call(['git', 'pull'], cwd=local_team_project_dir)
+        if result_pull !=0:
+            raise RuntimeError(f"Error while pulling code for {local_team_project_dir}")
+
+        subprocess.call(['git', 'fetch', 'base_project'], cwd = local_team_project_dir)
+        result_merge = subprocess.call(['git', 'merge', 'base_project/master'], cwd = local_team_project_dir)
+        if result_merge == 0:
+            # Open README.md.jinja
+            tempfileFile = f"{local_team_project_dir}/README.md.jinja"
+            if os.path.exists(tempfileFile):
+                template = Template(open(tempfileFile, "r").read())
+                templateVars = {"team": team}
+                output = template.render(templateVars)
+                with open(f"{local_team_project_dir}/README.md", "w") as f:
+                    f.write(output)
+
+
+                subprocess.call(['git', 'add', 'README.md'], cwd=local_team_project_dir)
+                subprocess.call(['git', 'rm', '-f', 'README.md.jinja'], cwd=local_team_project_dir)
+                subprocess.call(['git', 'commit', '-m', 'Update README.md'], cwd=local_team_project_dir)
+
+            subprocess.call(['git', 'push'], cwd = local_team_project_dir)
 
     def localTeamProjectDir(self, team: str) -> str:
         return f"{self.local_teams_dir}/{team.replace(" ", "-")}"
